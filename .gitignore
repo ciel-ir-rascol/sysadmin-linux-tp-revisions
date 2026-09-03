@@ -1,0 +1,7 @@
+# Genere par scripts/make-files.sh, ne doit pas etre versionne
+parchemins/
+
+# Sauvegardes et fichiers temporaires
+*~
+*.bak
+netplan-sauvegarde.yaml

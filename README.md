@@ -26,6 +26,15 @@ Ce TP révise **l'ensemble** des notions vues cette année : terminal, arboresce
 >    ```
 > 5. Communiquez l'URL de votre fork à l'enseignant en fin de séance.
 
+> [!IMPORTANT]
+> **Prérequis : une clé SSH déclarée sur GitHub**
+>
+> Le dépôt se clone **en SSH**, ce qui suppose une paire de clés créée sur votre poste et sa partie publique déposée sur votre compte GitHub.
+>
+> 👉 **[Annexe — Créer une clé SSH et l'associer à GitHub](ANNEXE-cles-ssh.md)**
+>
+> À faire **avant** la mission 1 — comptez une dizaine de minutes. Si vous disposez déjà d'une clé fonctionnelle, vous n'avez rien à refaire.
+
 ### Environnement de travail
 
 | | |
@@ -176,8 +185,17 @@ Travailler dans la console VirtualBox est vite pénible : pas de copier-coller, 
 
 3. Depuis le terminal de votre poste Ubuntu, connectez-vous :
    ```bash
-   ssh etudiant@ADRESSE_IP_DE_LA_VM
+   ssh -A etudiant@ADRESSE_IP_DE_LA_VM
    ```
+
+> [!IMPORTANT]
+> **Toujours se connecter avec l'option `-A`**
+>
+> `-A` active le **transfert d'agent SSH** : la VM pourra emprunter la clé SSH de votre poste pour dialoguer avec GitHub, **sans que votre clé privée n'y soit jamais copiée**. C'est indispensable aux `git clone` et `git push` de la mission 1.
+>
+> Prenez l'habitude de le mettre à **chaque** connexion à la VM. Si vous l'oubliez, Git échouera avec `Permission denied (publickey)` : il suffira de vous déconnecter et de vous reconnecter avec `-A`.
+>
+> Voir l'[annexe sur les clés SSH](ANNEXE-cles-ssh.md#6-travailler-depuis-la-vm-le-transfert-dagent-ssh--a) pour le détail du mécanisme.
 
 > [!NOTE]
 > À la première connexion, SSH affiche un avertissement sur l'authenticité de l'hôte et une empreinte de clé : répondez `yes`. Cette empreinte identifie le serveur et sera mémorisée dans `~/.ssh/known_hosts` pour détecter une éventuelle usurpation lors des connexions suivantes.
@@ -187,6 +205,7 @@ Travailler dans la console VirtualBox est vite pénible : pas de copier-coller, 
 1. Quelle commande avez-vous tapée exactement pour vous connecter ?
 2. Une fois connecté, exécutez `hostname` puis `whoami`. Que renvoient-elles, et sur quelle machine s'exécutent-elles réellement ?
 3. À quoi sert la commande `exit` dans une session SSH ?
+4. À quoi sert l'option `-A` que vous avez ajoutée, et pourquoi est-elle préférable à la copie de votre clé privée sur la VM ?
 
 **⚠️ Toute la suite du TP se déroule dans cette session SSH, sur la VM.**
 
@@ -214,18 +233,20 @@ Ce TP est distribué sous forme de **dépôt Git hébergé sur GitHub**. Vous al
 
 ### ❓ Question 1.1
 
+0. **Prérequis** : votre clé SSH doit être créée et déclarée sur GitHub — voir l'**[annexe dédiée](ANNEXE-cles-ssh.md)**. Vérifiez-le depuis votre **poste** avec `ssh -T git@github.com`, qui doit répondre `Hi VOTRE_PSEUDO!`.
 1. Depuis le navigateur de votre poste, connectez-vous à [github.com](https://github.com) avec votre compte personnel (créez-en un si nécessaire).
-2. Ouvrez la page du dépôt du TP : `<URL_REPO_GITHUB>`
+2. Ouvrez la page du dépôt du TP : **https://github.com/ciel-ir-rascol/sysadmin-linux-tp-revisions**
 3. Cliquez sur le bouton **Fork** en haut à droite, puis sur **Create fork**.
-4. Relevez l'URL de **votre** fork. Elle doit être de la forme :
+4. Relevez l'URL **SSH** de votre fork : bouton vert **Code** → onglet **SSH**. Elle doit être de la forme :
    ```text
-   https://github.com/VOTRE_PSEUDO/sysadmin-linux-tp-revisions
+   git@github.com:VOTRE_PSEUDO/sysadmin-linux-tp-revisions.git
    ```
 5. En quoi l'URL de votre fork diffère-t-elle de celle du dépôt d'origine ?
+6. Quelle différence voyez-vous entre l'URL de l'onglet **SSH** et celle de l'onglet **HTTPS** ?
 
 ### 1.2 — Installer Git sur la VM
 
-Reconnectez-vous en SSH sur votre VM. Git n'y est pas installé.
+Reconnectez-vous en SSH sur votre VM — **avec l'option `-A`** (`ssh -A etudiant@IP_VM`). Git n'y est pas installé.
 
 ### ❓ Question 1.2
 
@@ -257,32 +278,44 @@ git config --global --list
 ### ❓ Question 1.4
 
 1. Placez-vous dans votre dossier personnel (`cd ~`).
-2. Clonez **votre fork** (et non le dépôt de l'enseignant) :
+2. Vérifiez d'abord que le transfert d'agent fonctionne — vous devez voir votre clé, puis votre pseudo :
    ```bash
-   git clone https://github.com/VOTRE_PSEUDO/sysadmin-linux-tp-revisions.git
+   ssh-add -l
+   ssh -T git@github.com
    ```
-3. Entrez dans le dossier obtenu et listez son contenu :
+   Si l'une des deux échoue, c'est que vous vous êtes connecté à la VM **sans** `-A` : ressortez avec `exit` et reconnectez-vous avec `ssh -A etudiant@IP_VM`.
+3. Clonez **votre fork** (et non le dépôt de l'enseignant), **en SSH** :
+   ```bash
+   git clone git@github.com:VOTRE_PSEUDO/sysadmin-linux-tp-revisions.git
+   ```
+4. Entrez dans le dossier obtenu et listez son contenu :
    ```bash
    cd sysadmin-linux-tp-revisions
    ls -la
    ```
-4. Que contient le dossier caché `.git` ? Que se passerait-il si vous le supprimiez ?
-5. Affichez l'historique des commits avec `git log --oneline`.
+5. Que contient le dossier caché `.git` ? Que se passerait-il si vous le supprimiez ?
+6. Affichez l'historique des commits avec `git log --oneline`.
+7. Vérifiez que le dépôt est bien configuré en SSH : `git remote -v`. L'URL affichée commence-t-elle par `git@github.com:` ?
+
+> [!WARNING]
+> **Ne copiez jamais votre clé privée sur la VM**
+>
+> C'est la mauvaise solution qui vient naturellement à l'esprit. Votre clé privée doit rester sur votre poste : la VM est jetable, elle est clonée sur un dépôt Git, et un `git add .` malheureux enverrait votre secret sur GitHub, publiquement.
+>
+> Le transfert d'agent (`ssh -A`) résout le problème proprement : la VM utilise votre clé **à distance**, sans jamais la détenir.
 
 > [!NOTE]
-> **Authentification GitHub**
+> **Pourquoi SSH plutôt que HTTPS ?**
 >
-> Depuis 2021, GitHub **n'accepte plus votre mot de passe** pour les opérations Git en ligne de commande. Lorsqu'un mot de passe vous est demandé (au `git push`), il faut fournir un **jeton d'accès personnel** (*Personal Access Token*) :
+> En HTTPS, GitHub n'accepte plus votre mot de passe depuis 2021 : il faudrait générer et gérer un *Personal Access Token*, le stocker, le renouveler. Avec SSH, votre clé fait tout le travail — une fois déclarée, plus rien à saisir.
 >
-> 1. Sur GitHub : **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** → **Generate new token (classic)**
-> 2. Cochez la case **`repo`**, choisissez une durée de validité, puis générez.
-> 3. **Copiez le jeton immédiatement** : il ne sera plus jamais affiché.
-> 4. Utilisez-le à la place du mot de passe lors du `git push`.
->
-> Pour éviter de le retaper à chaque fois pendant la séance :
+> Si vous avez malgré tout cloné en HTTPS, pas besoin de tout refaire :
 > ```bash
-> git config --global credential.helper "cache --timeout=28800"
+> git remote set-url origin git@github.com:VOTRE_PSEUDO/sysadmin-linux-tp-revisions.git
+> git remote -v
 > ```
+>
+> En cas de difficulté, la [section dépannage de l'annexe](ANNEXE-cles-ssh.md#7-en-cas-de-problème) recense les erreurs courantes.
 
 ### 1.5 — Générer les fichiers de travail
 
@@ -730,9 +763,9 @@ Sur Ubuntu Server 24.04, la configuration réseau est décrite dans des fichiers
    ```bash
    sudo netplan apply
    ```
-2. Reconnectez-vous en SSH sur votre **nouvelle** adresse IP :
+2. Reconnectez-vous en SSH sur votre **nouvelle** adresse IP (toujours avec `-A`) :
    ```bash
-   ssh etudiant@192.168.SALLE.2XX
+   ssh -A etudiant@192.168.SALLE.2XX
    ```
 3. Vérifiez la nouvelle configuration avec `ip a`, `ip r` et `resolvectl status`. Les trois valeurs demandées sont-elles correctes ?
 4. Vérifiez que le réseau fonctionne toujours : `ping -c 4 192.168.SALLE.254` puis `ping -c 4 www.google.fr`.
@@ -753,10 +786,21 @@ Sur Ubuntu Server 24.04, la configuration réseau est décrite dans des fichiers
 
 1. Demandez à votre voisin de TP son adresse IP et vérifiez qu'il est joignable avec `ping`.
 2. Créez sur votre VM un utilisateur `pigeon` avec le mot de passe `voyageur` (**sans** l'ajouter au groupe `sudo`).
-3. Connectez-vous en SSH au compte `pigeon` de la VM de votre voisin.
+3. Connectez-vous en SSH au compte `pigeon` de la VM de votre voisin — **sans** l'option `-A`, cette fois (voir l'encadré ci-dessous) :
+   ```bash
+   ssh pigeon@IP_VM_DU_VOISIN
+   ```
 4. Dans le dossier personnel de `pigeon` de votre voisin, créez avec `nano` un fichier `message.txt` contenant un message de votre choix.
 5. Déconnectez-vous avec `exit` et demandez à votre voisin de vérifier le contenu du fichier reçu.
 6. `pigeon` peut-il utiliser `sudo` sur la machine de votre voisin ? Testez et justifiez.
+7. Pourquoi ne faut-il **pas** utiliser `-A` pour se connecter à la machine de quelqu'un d'autre ?
+
+> [!WARNING]
+> **`-A` seulement vers vos propres machines**
+>
+> Pendant une connexion avec transfert d'agent, l'administrateur de la machine distante peut se servir de votre agent pour s'authentifier **en votre nom** sur GitHub. Vers votre propre VM, c'est sans risque. Vers la machine d'un camarade — ou n'importe quel serveur dont vous n'avez pas le contrôle — c'est à éviter.
+>
+> Règle simple : `-A` vers **votre** VM, jamais ailleurs.
 
 ---
 

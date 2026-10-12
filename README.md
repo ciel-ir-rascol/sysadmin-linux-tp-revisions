@@ -45,6 +45,19 @@ Ce TP révise **l'ensemble** des notions vues cette année : terminal, arboresce
 | **Connexion** | SSH depuis le terminal du poste, VM lancée en mode headless |
 | **Identifiants VM** | `etudiant` / mot de passe **propre à votre VM**, affiché dans la console au premier démarrage |
 
+> [!TIP]
+> **Travailler chez soi**
+>
+> La VM est aussi disponible sur Google Drive — connectez-vous avec votre compte **rascol.net** :
+> [`UbuntuServer_TP_2026-10-12.ova`](https://drive.google.com/file/d/1YFFg--7t9_iR0x6Gb9NXu8n01Hx3OSQy/view?usp=sharing) (environ 300 Mo).
+>
+> 1. Installez **VirtualBox 7** sur votre ordinateur, puis importez le fichier : **Fichier → Importer un appareil virtuel…**
+> 2. Réseau : laissez la carte en **NAT** et ajoutez une redirection pour SSH : **Configuration → Réseau → Avancé → Redirection de ports**, règle `TCP`, port hôte `2222`, port invité `22`.
+> 3. Démarrez la VM et **lisez l'écran avant de vous connecter** : le mot de passe propre à cette VM s'affiche au-dessus de l'invite `login:`. Notez-le (il reste ensuite dans `~/MOT-DE-PASSE.txt`).
+> 4. Depuis un terminal de votre ordinateur : `ssh -A -p 2222 etudiant@127.0.0.1`
+>
+> Chaque import donne une VM différente, avec son propre mot de passe : celui de la VM du lycée ne fonctionne pas sur celle de la maison. Les questions qui reposent sur le réseau de la salle (adresse IP statique, connexion à la VM d'un camarade) se font au lycée.
+
 ### En cas de blocage
 
 - Chaque commande dispose de son manuel : `man <commande>`

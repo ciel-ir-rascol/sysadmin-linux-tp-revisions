@@ -40,10 +40,10 @@ Ce TP révise **l'ensemble** des notions vues cette année : terminal, arboresce
 | | |
 | --- | --- |
 | **Poste** | Ubuntu Desktop 24.04 LTS |
-| **VM** | Ubuntu Server 24.04 LTS sous VirtualBox (`UbuntuServer_TP.ova`, sur le partage NAS) |
+| **VM** | Ubuntu Server 24.04 LTS sous VirtualBox (`UbuntuServer_TP_2026-10-12.ova`, sur le partage NAS) |
 | **Réseau VM** | Accès par pont — IP en DHCP au démarrage, puis IP statique en mission 7 |
 | **Connexion** | SSH depuis le terminal du poste, VM lancée en mode headless |
-| **Identifiants VM** | `etudiant` / `rascol` |
+| **Identifiants VM** | `etudiant` / mot de passe **propre à votre VM**, affiché dans la console au premier démarrage |
 
 ### En cas de blocage
 
@@ -91,17 +91,17 @@ Ouvrez un terminal sur votre poste (raccourci `Ctrl` + `Alt` + `T`).
 1. Rendez-vous dans le dossier du partage et repérez le fichier :
    ```bash
    cd /partages_etudiants/iso/
-   ls -lh UbuntuServer_TP.ova
+   ls -lh UbuntuServer_TP_2026-10-12.ova
    ```
    Relevez la **taille** du fichier.
 2. Copiez-le dans votre dossier personnel — on travaille toujours sur une copie locale, jamais directement sur le partage réseau :
    ```bash
-   cp /partages_etudiants/iso/UbuntuServer_TP.ova ~/
+   cp /partages_etudiants/iso/UbuntuServer_TP_2026-10-12.ova ~/
    ```
 3. Vérifiez la présence de la copie avec `ls -lh ~`. Sa taille correspond-elle à celle de l'original ?
 
 > [!NOTE]
-> Le fichier est volumineux (plusieurs Go) : la copie prend un certain temps et `cp` n'affiche **aucune barre de progression**. Tant que le curseur n'est pas revenu, la copie est en cours — laissez-la se terminer.
+> Le fichier pèse environ 300 Mo : la copie prend quelques secondes et `cp` n'affiche **aucune barre de progression**. Tant que le curseur n'est pas revenu, la copie est en cours — laissez-la se terminer.
 
 > [!NOTE]
 > **Si le chemin ne correspond pas**
@@ -110,7 +110,7 @@ Ouvrez un terminal sur votre poste (raccourci `Ctrl` + `Alt` + `T`).
 > ```bash
 > ls /partages_etudiants
 > # ou, pour rechercher le fichier :
-> find / -name "UbuntuServer_TP.ova" 2>/dev/null
+> find / -name "UbuntuServer_TP_2026-10-12.ova" 2>/dev/null
 > ```
 > La redirection `2>/dev/null` masque les nombreux messages « permission refusée » de `find`.
 
@@ -121,7 +121,7 @@ Ouvrez un terminal sur votre poste (raccourci `Ctrl` + `Alt` + `T`).
 
     ![](figures/virtualbox01.png)
 
-3. Sélectionnez le fichier `UbuntuServer_TP.ova` copié dans votre dossier personnel.
+3. Sélectionnez le fichier `UbuntuServer_TP_2026-10-12.ova` copié dans votre dossier personnel.
 4. Dans l'onglet des paramètres, changez le nom de la VM en **`tp-revisions`**.
 
     ![](figures/virtualbox07.png)
@@ -147,11 +147,13 @@ Avant de démarrer, il faut vérifier le mode réseau de la carte virtuelle.
 
 ### 0.4 — Premier démarrage et connexion
 
-Démarrez la VM. Une fenêtre console s'ouvre. Identifiez-vous :
+Démarrez la VM. Une fenêtre console s'ouvre. Au premier démarrage, la VM tire un **mot de passe qui lui est propre** et l'affiche au-dessus de l'invite `login:`. **Notez-le** : il disparaît de l'écran après votre première connexion (il reste ensuite dans le fichier `~/MOT-DE-PASSE.txt` de la VM).
+
+Identifiez-vous :
 
 ```text
 login    : etudiant
-password : rascol
+password : (celui affiché à l'écran)
 ```
 
 > [!NOTE]
